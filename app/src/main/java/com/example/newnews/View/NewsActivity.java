@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.android.volley.*;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -32,12 +33,14 @@ public class NewsActivity extends AppCompatActivity {
     private String url = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=e5e3a444364b42f0829f035765ce82e9";
     ArrayList<NewsItemModel> arrayList;
     DbController dbController;
+    SwipeRefreshLayout swiperefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         newsListRecycler = findViewById(R.id.newsList);
+        swiperefresh = findViewById(R.id.swiperefresh);
 
         arrayList = new ArrayList<>();
         dbController = new DbController(this);
@@ -47,7 +50,7 @@ public class NewsActivity extends AppCompatActivity {
         } else {
             getDataFromDb();
         }
-
+        swiperefresh.setOnRefreshListener(() -> getDataFromApi());
     }
 
     private void getDataFromDb() {
@@ -88,7 +91,7 @@ public class NewsActivity extends AppCompatActivity {
                     }
                 }, error -> Log.e(TAG, error.toString())) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders()  {
                 return headers;
             }
         };
